@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * A spellchecker maintains an efficient representation of a dictionary for
@@ -26,7 +28,7 @@ public class SpellChecker {
 
     /** A Node of the SpellChecker structure. */
     private class Node {
-        // TODO: implement me!
+        HashMap<Character, Node> chars = new HashMap<>();
     }
 
     /** The root of the SpellChecker */
@@ -37,7 +39,26 @@ public class SpellChecker {
     }
 
     public void add(String word) {
-        // TODO: implement me!
+        char currentChar = ' ';
+        Node firstNode = root;
+        for (int i = 0; i < word.length(); i++) {
+            currentChar = word.charAt(i);
+            if (!(firstNode.chars.containsKey(currentChar))) {
+                firstNode.chars.put(currentChar, null);
+            } else {
+                Node nextNode = root.chars.get(currentChar);
+                if (nextNode == null) {
+                    nextNode.chars.put(currentChar, null);   
+                }
+
+                currentChar = word.charAt(i+1);
+                firstNode = root.chars.get(currentChar);
+            }
+
+            if (i < (word.length() - 1)) {
+                
+            }
+        }
     }
 
     public boolean isWord(String word) {
