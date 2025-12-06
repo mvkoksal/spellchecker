@@ -28,57 +28,116 @@ public class SpellChecker {
 
     /** A Node of the SpellChecker structure. */
     private class Node {
-        HashMap<Character, Node> chars = new HashMap<>();
+        HashMap<Character, Node> chars;
+        boolean isEnd;
+        public Node() {
+            this.chars = new HashMap<>();
+            this.isEnd = false;
+        }
     }
 
     /** The root of the SpellChecker */
     private Node root;
 
     public SpellChecker(List<String> dict) {
-        // TODO: implement me!
+        for (int i = 0; i < dict.size(); i++) {
+            add(dict.get(i));
+        }
     }
 
     public void add(String word) {
         char currentChar = ' ';
-        Node firstNode = root;
+        Node firstNode = this.root;
         for (int i = 0; i < word.length(); i++) {
             currentChar = word.charAt(i);
+            if (firstNode == null) {
+                firstNode = new Node();
+            } 
             if (!(firstNode.chars.containsKey(currentChar))) {
-                firstNode.chars.put(currentChar, null);
+                firstNode.chars.put(currentChar, new Node());
+                firstNode = firstNode.chars.get(currentChar);
             } else {
-                Node nextNode = root.chars.get(currentChar);
-                if (nextNode == null) {
-                    nextNode.chars.put(currentChar, null);   
-                }
-
-                currentChar = word.charAt(i+1);
-                firstNode = root.chars.get(currentChar);
-            }
-
-            if (i < (word.length() - 1)) {
-                
+                firstNode = firstNode.chars.get(currentChar);
             }
         }
+        firstNode.isEnd = true;
     }
 
     public boolean isWord(String word) {
-        // TODO: implement me!
-        return false;
+        char currentChar = ' ';
+        Node firstNode = root;
+        for (int i = 0; i < word.length(); i++) {
+            currentChar = word.charAt(i);
+            if (firstNode == null) {
+                firstNode = new Node();
+            } 
+            if (firstNode.chars.containsKey(currentChar)) {
+                firstNode = firstNode.chars.get(currentChar);
+            } else {
+                return false;
+            }
+        }
+        return true;
     }
 
     public List<String> getOneCharCompletions(String word) {
-        // TOOD: implement me!
-        return null;
+        char currentChar = ' ';
+        Node firstNode = root;
+        for (int i = 0; i < word.length(); i++) {
+            currentChar = word.charAt(i);
+            if (firstNode == null) {
+                firstNode = new Node();
+            } 
+            if (firstNode.chars.containsKey(currentChar)) {
+                firstNode = firstNode.chars.get(currentChar);
+            }
+        }
+
+        List<String> wordList = new ArrayList<>();
+        for (char key: firstNode.chars.keySet()) {
+            if (firstNode.chars.get(key).isEnd) {
+                wordList.add(word+key);
+            }
+        }
+        return wordList;
     }
 
     public List<String> getOneCharEndCorrections(String word) {
-        // TODO: implement me!
-        return null;
+        String shorterWord = "";
+        // Removes the last letter of the word
+        for (int i = 0; i< word.length() - 1; i ++) {
+            shorterWord += word.charAt(i);
+        }
+        return getOneCharCompletions(shorterWord);
     }
 
     public List<String> getOneCharCorrections(String word) {
-        // TODO: implement me!
-        return null;
+        char currentChar = ' ';
+        Node firstNode = root;
+        int index = 0;
+        for (int i = 0; i < word.length(); i++) {
+            currentChar = word.charAt(i);
+            if (firstNode == null) {
+                firstNode = new Node();
+            } 
+            if (firstNode.chars.containsKey(currentChar)) {
+                firstNode = firstNode.chars.get(currentChar);
+            } else {
+                index = i;
+                break;
+            }
+        }
+        List<String> wordList = new ArrayList<>();
+
+        for (char key: firstNode.chars.keySet()) {
+            String first = word.substring(0, index - 1);
+            String last = word.substring(index + 1, word.length() - 1);
+            String newWord = first + key + last;
+            if (isWord(newWord)) {
+                wordList.add(newWord);
+            }
+        }
+        return wordList;
     }
 
     public static void main(String[] args) throws IOException {
